@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Le' Fut Goat</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <header>
+        <h1>Le' Fut Goat</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="criar-carta.html">Criar Carta</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="historia.html">Minha História no Futebol</a>
+            <span id="navAuth"></span>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+        <div class="login-card">
+            <h2>Bem-vindo de volta! ⚽</h2>
+            <p>Entre e continue sua jornada no futebol.</p>
+            <div class="erro-msg" id="loginError"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                </div>
+                <button type="submit" class="btn-block">Entrar</button>
+            </form>
+            <div class="link-text">
+                Não tem conta? <a href="cadastro.html">Cadastre-se</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>© 2026 Le' Fut Goat</p>
+            <p>⚽ Mais que um esporte, uma paixão</p>
+            <p>Feito com ❤️ para o futebol</p>
+        </div>
+    </footer>
+
+    <script>
+        var usuarios = [];
+        var usuarioLogado = null;
+
+        function carregarBanco() {
+            var u = localStorage.getItem('lefutgoat_usuarios');
+            var l = localStorage.getItem('lefutgoat_sessao');
+            if (u) usuarios = JSON.parse(u);
+            if (l) usuarioLogado = JSON.parse(l);
+        }
+
+        function salvarBanco() {
+            localStorage.setItem('lefutgoat_usuarios', JSON.stringify(usuarios));
+            if (usuarioLogado) {
+                localStorage.setItem('lefutgoat_sessao', JSON.stringify(usuarioLogado));
+            } else {
+                localStorage.removeItem('lefutgoat_sessao');
+            }
+        }
+
+        function atualizarNavAuth() {
+            var area = document.getElementById('navAuth');
+            if (usuarioLogado) {
+                var iniciais = usuarioLogado.nome.split(' ').map(function (n) { return n[0]; }).join('').substring(0, 2).toUpperCase();
+                area.innerHTML = '<span class="nav-info"><span class="user-avatar">' + iniciais + '</span> ' + usuarioLogado.nome.split(' ')[0] + ' <a class="logout-link" href="#" id="logoutLink">Sair</a></span>';
+            } else {
+                area.innerHTML = '<a href="login.html" class="nav-active">Login</a><a href="cadastro.html" class="nav-register-link">Cadastrar</a>';
+            }
+        }
+
+        function usuarioAutenticar(email, senha) {
+            var resultados = [];
+            for (var i = 0; i < usuarios.length; i++) {
+                if (usuarios[i].email === email && usuarios[i].senha === senha) {
+                    resultados.push(usuarios[i]);
+                }
+            }
+            return resultados;
+        }
+
+        function showMsg(el, msg) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function getRedirectUrl() {
+            var params = new URLSearchParams(window.location.search);
+            return params.get('redirect') || 'index.html';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            var email = document.getElementById('loginEmail').value.trim();
+            var senha = document.getElementById('loginPassword').value;
+            var errEl = document.getElementById('loginError');
+            errEl.style.display = 'none';
+
+            var resultados = usuarioAutenticar(email, senha);
+            if (resultados.length === 1) {
+                usuarioLogado = resultados[0];
+                salvarBanco();
+                window.location.href = getRedirectUrl();
+            } else {
+                var emailExiste = false;
+                for (var i = 0; i < usuarios.length; i++) {
+                    if (usuarios[i].email === email) { emailExiste = true; break; }
+                }
+                showMsg(errEl, emailExiste ? 'Senha incorreta!' : 'E-mail não encontrado!');
+            }
+        }
+
+        function showToast(msg) {
+            var toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(function () { toast.classList.add('toast-hide'); setTimeout(function () { if (toast.parentNode) toast.remove(); }, 300); }, 3000);
+        }
+
+        document.addEventListener('click', function (e) {
+            var logout = e.target.closest('#logoutLink');
+            if (logout) {
+                e.preventDefault();
+                usuarioLogado = null;
+                salvarBanco();
+                atualizarNavAuth();
+                showToast('Você saiu da conta.');
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', function () {
+            carregarBanco();
+            atualizarNavAuth();
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        });
+    </script>
+</body>
+</html>

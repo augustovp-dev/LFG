@@ -1,0 +1,227 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #000000;
+    background: #000000;
+    color: white;
+}
+
+header {
+    background-color: #EB0D3F;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+header h1 {
+    color: white;
+    margin: 0;
+    margin-left: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-right: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+nav a:last-child {
+    background-color: #EB0D3F;
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+nav a.nav-active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    padding: 6px 12px !important;
+    border-radius: 5px !important;
+}
+
+.nav-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-size: 0.9em;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: #FFD700;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.85em;
+}
+
+.logout-link {
+    color: #FFD700 !important;
+    font-size: 0.85em !important;
+    padding: 4px 8px !important;
+}
+
+nav a.nav-register-link {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+.history-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 100px 20px 40px;
+    color: white;
+}
+
+.history-page h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 2em;
+    color: #EB0D3F;
+}
+
+.history-subtitle {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 40px;
+}
+
+.timeline {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 30px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: -30px;
+    width: 2px;
+    background: linear-gradient(180deg, #EB0D3F, transparent);
+}
+
+.timeline-item::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    background: #EB0D3F;
+    border-radius: 50%;
+    border: 3px solid #1a1a2e;
+}
+
+.timeline-card {
+    background: white;
+    color: #333;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.timeline-card:hover {
+    transform: translateX(5px);
+}
+
+.timeline-card h3 {
+    color: #EB0D3F;
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.2em;
+}
+
+.timeline-card p {
+    line-height: 1.7;
+    color: #555;
+}
+
+.challenge-list,
+.learning-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.challenge-list li,
+.learning-list li {
+    padding: 5px 0;
+    padding-left: 25px;
+    position: relative;
+    color: #555;
+}
+
+.challenge-list li::before {
+    content: '⚠️';
+    position: absolute;
+    left: 0;
+}
+
+footer {
+    background-color: #EB0D3F;
+    color: white;
+    margin-top: 40px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 15px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.footer-container p {
+    margin: 0;
+}
+
+.toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    background: #1a1a2e;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    border-left: 4px solid #EB0D3F;
+    z-index: 3000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    max-width: 350px;
+    animation: toastIn 0.3s ease;
+}
+
+.toast-hide {
+    opacity: 0;
+    transition: opacity 0.3s;
+}

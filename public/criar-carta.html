@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Carta - Le' Fut Goat</title>
+    <link rel="stylesheet" href="criar-carta.css">
+</head>
+<body>
+    <header>
+        <h1>Le' Fut Goat</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="criar-carta.html" class="nav-active">Criar Carta</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="historia.html">Minha História no Futebol</a>
+            <span id="navAuth"></span>
+        </nav>
+    </header>
+
+    <main class="card-creator-page">
+        <h2>⚽ Monte sua carta estilo FIFA</h2>
+        <div class="card-creator-grid">
+            <div>
+                <div class="fifa-card gold-card" id="fifaCardPreview">
+                    <div class="card-overall" id="previewOverall">75</div>
+                    <div class="card-position" id="previewPosition">ATA</div>
+                    <div class="card-player-name" id="previewName">JOGADOR</div>
+                    <div class="card-type" id="previewType">Gold Card</div>
+                    <div class="card-stats">
+                        <div class="card-stat"><div class="stat-val" id="prevPAC">75</div><div class="stat-lbl">PAC</div></div>
+                        <div class="card-stat"><div class="stat-val" id="prevSHO">75</div><div class="stat-lbl">SHO</div></div>
+                        <div class="card-stat"><div class="stat-val" id="prevPAS">75</div><div class="stat-lbl">PAS</div></div>
+                        <div class="card-stat"><div class="stat-val" id="prevDRI">75</div><div class="stat-lbl">DRI</div></div>
+                        <div class="card-stat"><div class="stat-val" id="prevDEF">75</div><div class="stat-lbl">DEF</div></div>
+                        <div class="card-stat"><div class="stat-val" id="prevPHY">75</div><div class="stat-lbl">PHY</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-panel">
+                <h3>📝 Dados da Carta</h3>
+                <div id="creatorMsg"></div>
+                <div class="form-group">
+                    <label>Nome do Jogador</label>
+                    <input type="text" id="cardName" placeholder="Ex: Neymar Jr">
+                </div>
+                <div class="atributos-grid">
+                    <div class="atributo-item">
+                        <label>Posição</label>
+                        <select id="cardPosition">
+                            <option value="ATA">Atacante (ATA)</option>
+                            <option value="MEI">Meia (MEI)</option>
+                            <option value="VOL">Volante (VOL)</option>
+                            <option value="LAT">Lateral (LAT)</option>
+                            <option value="ZAG">Zagueiro (ZAG)</option>
+                            <option value="GOL">Goleiro (GOL)</option>
+                        </select>
+                    </div>
+                    <div class="atributo-item">
+                        <label>Modo</label>
+                        <select id="cardMode">
+                            <option value="Simples">Simples</option>
+                            <option value="Avancado">Avançado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 class="creator-attributes-title">⚡ Atributos Principais (0–99)</h3>
+                <div class="atributos-grid">
+                    <div class="atributo-item">
+                        <label>Ritmo <span id="pacVal" class="attr-value">75</span></label>
+                        <input type="range" id="attrPAC" min="0" max="99" value="75">
+                    </div>
+                    <div class="atributo-item">
+                        <label>Chute <span id="shoVal" class="attr-value">75</span></label>
+                        <input type="range" id="attrSHO" min="0" max="99" value="75">
+                    </div>
+                    <div class="atributo-item">
+                        <label>Passe <span id="pasVal" class="attr-value">75</span></label>
+                        <input type="range" id="attrPAS" min="0" max="99" value="75">
+                    </div>
+                    <div class="atributo-item">
+                        <label>Drible <span id="driVal" class="attr-value">75</span></label>
+                        <input type="range" id="attrDRI" min="0" max="99" value="75">
+                    </div>
+                    <div class="atributo-item">
+                        <label>Defesa <span id="defVal" class="attr-value">75</span></label>
+                        <input type="range" id="attrDEF" min="0" max="99" value="75">
+                    </div>
+                    <div class="atributo-item">
+                        <label>Físico <span id="phyVal" class="attr-value">75</span></label>
+                        <input type="range" id="attrPHY" min="0" max="99" value="75">
+                    </div>
+                </div>
+                <button class="btn-salvar" type="button" id="createCardButton">🎴 Criar Carta</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>© 2026 Le' Fut Goat</p>
+            <p>⚽ Mais que um esporte, uma paixão</p>
+            <p>Feito com ❤️ para o futebol</p>
+        </div>
+    </footer>
+
+    <script>
+        var usuarios = [];
+        var cartas = [];
+        var usuarioLogado = null;
+
+        function carregarBanco() {
+            var u = localStorage.getItem('lefutgoat_usuarios');
+            var c = localStorage.getItem('lefutgoat_cartas');
+            var l = localStorage.getItem('lefutgoat_sessao');
+            if (u) usuarios = JSON.parse(u);
+            if (c) cartas = JSON.parse(c);
+            if (l) usuarioLogado = JSON.parse(l);
+        }
+
+        function salvarBanco() {
+            localStorage.setItem('lefutgoat_usuarios', JSON.stringify(usuarios));
+            localStorage.setItem('lefutgoat_cartas', JSON.stringify(cartas));
+            if (usuarioLogado) {
+                localStorage.setItem('lefutgoat_sessao', JSON.stringify(usuarioLogado));
+            } else {
+                localStorage.removeItem('lefutgoat_sessao');
+            }
+        }
+
+        function atualizarNavAuth() {
+            var area = document.getElementById('navAuth');
+            if (usuarioLogado) {
+                var iniciais = usuarioLogado.nome.split(' ').map(function (n) { return n[0]; }).join('').substring(0, 2).toUpperCase();
+                area.innerHTML = '<span class="nav-info"><span class="user-avatar">' + iniciais + '</span> ' + usuarioLogado.nome.split(' ')[0] + ' <a class="logout-link" href="#" id="logoutLink">Sair</a></span>';
+            } else {
+                area.innerHTML = '<a href="login.html?redirect=criar-carta.html">Login</a><a href="cadastro.html" class="nav-register-link">Cadastrar</a>';
+            }
+        }
+
+        function calcularOverall(pac, sho, pas, dri, def, phy) {
+            return Math.round((pac + sho + pas + dri + def + phy) / 6);
+        }
+
+        function getTipoCarta(overall) {
+            if (overall >= 90) return 'Special';
+            if (overall >= 80) return 'Gold';
+            if (overall >= 70) return 'Silver';
+            return 'Bronze';
+        }
+
+        function updateFifaPreview() {
+            var nome = document.getElementById('cardName').value || 'JOGADOR';
+            var posicao = document.getElementById('cardPosition').value;
+            var pac = parseInt(document.getElementById('attrPAC').value);
+            var sho = parseInt(document.getElementById('attrSHO').value);
+            var pas = parseInt(document.getElementById('attrPAS').value);
+            var dri = parseInt(document.getElementById('attrDRI').value);
+            var def = parseInt(document.getElementById('attrDEF').value);
+            var phy = parseInt(document.getElementById('attrPHY').value);
+
+            document.getElementById('pacVal').textContent = pac;
+            document.getElementById('shoVal').textContent = sho;
+            document.getElementById('pasVal').textContent = pas;
+            document.getElementById('driVal').textContent = dri;
+            document.getElementById('defVal').textContent = def;
+            document.getElementById('phyVal').textContent = phy;
+
+            var overall = calcularOverall(pac, sho, pas, dri, def, phy);
+            var tipo = getTipoCarta(overall);
+
+            document.getElementById('previewOverall').textContent = overall;
+            document.getElementById('previewPosition').textContent = posicao;
+            document.getElementById('previewName').textContent = nome.toUpperCase();
+            document.getElementById('previewType').textContent = tipo + ' Card';
+            document.getElementById('prevPAC').textContent = pac;
+            document.getElementById('prevSHO').textContent = sho;
+            document.getElementById('prevPAS').textContent = pas;
+            document.getElementById('prevDRI').textContent = dri;
+            document.getElementById('prevDEF').textContent = def;
+            document.getElementById('prevPHY').textContent = phy;
+
+            var card = document.getElementById('fifaCardPreview');
+            card.className = 'fifa-card';
+            if (tipo === 'Special') card.classList.add('special-card');
+            else if (tipo === 'Gold') card.classList.add('gold-card');
+            else if (tipo === 'Silver') card.classList.add('silver-card');
+        }
+
+        function cartaCriar(dados) {
+            var id = cartas.length > 0 ? Math.max.apply(null, cartas.map(function (c) { return c.id; })) + 1 : 1;
+            cartas.push({
+                id: id,
+                nome: dados.nome,
+                overall: dados.overall,
+                tipo: dados.tipo,
+                posicao: dados.posicao,
+                modo: dados.modo,
+                atributos: dados.atributos,
+                usuarioId: usuarioLogado.id,
+                usuarioNome: usuarioLogado.nome,
+                dataCriacao: new Date().toLocaleDateString('pt-BR')
+            });
+            salvarBanco();
+        }
+
+        function criarCarta() {
+            var nome = document.getElementById('cardName').value.trim();
+            var msgEl = document.getElementById('creatorMsg');
+
+            if (!nome) {
+                msgEl.className = 'erro-msg';
+                msgEl.textContent = 'Por favor, insira o nome do jogador!';
+                msgEl.style.display = 'block';
+                setTimeout(function () { msgEl.style.display = 'none'; }, 3000);
+                return;
+            }
+
+            if (!usuarioLogado) {
+                msgEl.className = 'erro-msg';
+                msgEl.textContent = 'Faça login para criar uma carta!';
+                msgEl.style.display = 'block';
+                setTimeout(function () { window.location.href = 'login.html?redirect=criar-carta.html'; }, 900);
+                return;
+            }
+
+            var pac = parseInt(document.getElementById('attrPAC').value);
+            var sho = parseInt(document.getElementById('attrSHO').value);
+            var pas = parseInt(document.getElementById('attrPAS').value);
+            var dri = parseInt(document.getElementById('attrDRI').value);
+            var def = parseInt(document.getElementById('attrDEF').value);
+            var phy = parseInt(document.getElementById('attrPHY').value);
+            var posicao = document.getElementById('cardPosition').value;
+            var modo = document.getElementById('cardMode').value;
+            var overall = calcularOverall(pac, sho, pas, dri, def, phy);
+            var tipo = getTipoCarta(overall);
+
+            cartaCriar({
+                nome: nome,
+                overall: overall,
+                tipo: tipo,
+                posicao: posicao,
+                modo: modo,
+                atributos: { pac: pac, sho: sho, pas: pas, dri: dri, def: def, phy: phy }
+            });
+
+            msgEl.className = 'sucesso-msg';
+            msgEl.textContent = 'Carta "' + nome + '" criada com sucesso! Overall: ' + overall;
+            msgEl.style.display = 'block';
+            document.getElementById('cardName').value = '';
+            updateFifaPreview();
+            setTimeout(function () { msgEl.style.display = 'none'; }, 3000);
+        }
+
+        function showToast(msg) {
+            var toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(function () { toast.classList.add('toast-hide'); setTimeout(function () { if (toast.parentNode) toast.remove(); }, 300); }, 3000);
+        }
+
+        document.addEventListener('click', function (e) {
+            var logout = e.target.closest('#logoutLink');
+            if (logout) {
+                e.preventDefault();
+                usuarioLogado = null;
+                salvarBanco();
+                atualizarNavAuth();
+                showToast('Você saiu da conta.');
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', function () {
+            carregarBanco();
+            atualizarNavAuth();
+            updateFifaPreview();
+            document.getElementById('createCardButton').addEventListener('click', criarCarta);
+            ['cardName', 'cardPosition', 'attrPAC', 'attrSHO', 'attrPAS', 'attrDRI', 'attrDEF', 'attrPHY'].forEach(function (id) {
+                var el = document.getElementById(id);
+                el.addEventListener(id === 'cardPosition' ? 'change' : 'input', updateFifaPreview);
+            });
+        });
+    </script>
+</body>
+</html>

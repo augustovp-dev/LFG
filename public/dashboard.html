@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Le' Fut Goat</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <header>
+        <h1>Le' Fut Goat</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="criar-carta.html">Criar Carta</a>
+            <a href="dashboard.html" class="nav-active">Dashboard</a>
+            <a href="historia.html">Minha História no Futebol</a>
+            <span id="navAuth"></span>
+        </nav>
+    </header>
+
+    <main class="dashboard-page">
+        <h2>📊 Dashboard de Cartas</h2>
+        <div class="dashboard-container">
+            <div class="kpis">
+                <div class="kpi"><div class="kpi-valor" id="kpiJogadores">0</div><div class="kpi-label">Jogadores</div></div>
+                <div class="kpi"><div class="kpi-valor" id="kpiCartas">0</div><div class="kpi-label">Cartas Criadas</div></div>
+                <div class="kpi"><div class="kpi-valor" id="kpiOverallMedio">0</div><div class="kpi-label">Overall Médio</div></div>
+                <div class="kpi"><div class="kpi-valor" id="kpiMaiorOverall">0</div><div class="kpi-label">Maior Overall</div></div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-panel">
+                    <h3>⚡ Atributos Principais</h3>
+                    <div class="chart-container">
+                        <canvas id="radarChart" width="350" height="350"></canvas>
+                    </div>
+                </div>
+                <div class="dashboard-panel">
+                    <h3>📈 Desempenho por Atributo</h3>
+                    <div class="barras-container" id="barrasContainer">
+                        <p class="empty-msg">Insira os atributos e clique em "Gerar Dashboard" para visualizar.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ranking-card">
+                <h3>🏆 Ranking Geral de Cartas</h3>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>#</th><th>Jogador</th><th>Overall</th><th>Posição</th><th>Tipo</th><th>Modo</th><th>Data</th><th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingBody">
+                        <tr><td colspan="8" class="empty-msg">Nenhuma carta criada ainda. Seja o primeiro!</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>© 2026 Le' Fut Goat</p>
+            <p>⚽ Mais que um esporte, uma paixão</p>
+            <p>Feito com ❤️ para o futebol</p>
+        </div>
+    </footer>
+
+    <script>
+        var cartas = [];
+        var usuarioLogado = null;
+
+        function carregarBanco() {
+            var c = localStorage.getItem('lefutgoat_cartas');
+            var l = localStorage.getItem('lefutgoat_sessao');
+            if (c) cartas = JSON.parse(c);
+            if (l) usuarioLogado = JSON.parse(l);
+        }
+
+        function salvarBanco() {
+            localStorage.setItem('lefutgoat_cartas', JSON.stringify(cartas));
+            if (usuarioLogado) {
+                localStorage.setItem('lefutgoat_sessao', JSON.stringify(usuarioLogado));
+            } else {
+                localStorage.removeItem('lefutgoat_sessao');
+            }
+        }
+
+        function atualizarNavAuth() {
+            var area = document.getElementById('navAuth');
+            if (usuarioLogado) {
+                var iniciais = usuarioLogado.nome.split(' ').map(function (n) { return n[0]; }).join('').substring(0, 2).toUpperCase();
+                area.innerHTML = '<span class="nav-info"><span class="user-avatar">' + iniciais + '</span> ' + usuarioLogado.nome.split(' ')[0] + ' <a class="logout-link" href="#" id="logoutLink">Sair</a></span>';
+            } else {
+                area.innerHTML = '<a href="login.html?redirect=dashboard.html">Login</a><a href="cadastro.html" class="nav-register-link">Cadastrar</a>';
+            }
+        }
+
+        function cartaListarTodas() {
+            return cartas.slice().sort(function (a, b) { return b.overall - a.overall; });
+        }
+
+        function cartaDeletar(id) {
+            for (var i = 0; i < cartas.length; i++) {
+                if (cartas[i].id === id) {
+                    cartas.splice(i, 1);
+                    salvarBanco();
+                    return;
+                }
+            }
+        }
+
+        function atualizarDashboard() {
+            var lista = cartaListarTodas();
+            var totalCartas = lista.length;
+            var unicos = {};
+            var somaOverall = 0;
+            var maiorOverall = 0;
+
+            for (var i = 0; i < lista.length; i++) {
+                unicos[lista[i].nome] = true;
+                somaOverall += lista[i].overall;
+                if (lista[i].overall > maiorOverall) maiorOverall = lista[i].overall;
+            }
+
+            var overallMedio = totalCartas > 0 ? Math.round(somaOverall / totalCartas) : 0;
+
+            document.getElementById('kpiJogadores').textContent = Object.keys(unicos).length;
+            document.getElementById('kpiCartas').textContent = totalCartas;
+            document.getElementById('kpiOverallMedio').textContent = overallMedio;
+            document.getElementById('kpiMaiorOverall').textContent = maiorOverall;
+
+            atualizarRanking(lista);
+            atualizarGraficos(lista);
+        }
+
+        function atualizarRanking(lista) {
+            var tbody = document.getElementById('rankingBody');
+            if (lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-msg">Nenhuma carta criada ainda. Seja o primeiro!</td></tr>';
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < lista.length; i++) {
+                var c = lista[i];
+                var badgeClass = '';
+                if (c.overall >= 90) badgeClass = 'special';
+                else if (c.overall >= 80) badgeClass = 'gold';
+                else if (c.overall >= 70) badgeClass = 'silver';
+                else badgeClass = 'bronze';
+
+                html += '<tr><td class="rank-num">' + (i + 1) + 'º</td>' +
+                    '<td><strong>' + c.nome + '</strong></td>' +
+                    '<td><span class="overall-badge ' + badgeClass + '">' + c.overall + '</span></td>' +
+                    '<td>' + c.posicao + '</td><td>' + c.tipo + '</td><td>' + c.modo + '</td>' +
+                    '<td>' + c.dataCriacao + '</td>' +
+                    '<td><button class="btn-delete" type="button" data-delete-id="' + c.id + '">🗑️ Excluir</button></td></tr>';
+            }
+            tbody.innerHTML = html;
+        }
+
+        function atualizarGraficos(lista) {
+            var atributos = { pac: 0, sho: 0, pas: 0, dri: 0, def: 0, phy: 0 };
+            if (lista.length > 0) {
+                for (var i = 0; i < lista.length; i++) {
+                    atributos.pac += lista[i].atributos.pac;
+                    atributos.sho += lista[i].atributos.sho;
+                    atributos.pas += lista[i].atributos.pas;
+                    atributos.dri += lista[i].atributos.dri;
+                    atributos.def += lista[i].atributos.def;
+                    atributos.phy += lista[i].atributos.phy;
+                }
+                var n = lista.length;
+                atributos.pac = Math.round(atributos.pac / n);
+                atributos.sho = Math.round(atributos.sho / n);
+                atributos.pas = Math.round(atributos.pas / n);
+                atributos.dri = Math.round(atributos.dri / n);
+                atributos.def = Math.round(atributos.def / n);
+                atributos.phy = Math.round(atributos.phy / n);
+            }
+
+            desenharRadar(atributos);
+            desenharBarras(atributos);
+        }
+
+        function desenharRadar(attr) {
+            var canvas = document.getElementById('radarChart');
+            var ctx = canvas.getContext('2d');
+            var w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            var labels = ['Ritmo', 'Chute', 'Passe', 'Drible', 'Defesa', 'Físico'];
+            var values = [attr.pac, attr.sho, attr.pas, attr.dri, attr.def, attr.phy];
+            var n = labels.length;
+            var cx = w / 2, cy = h / 2, raioMax = 130;
+
+            for (var nivel = 1; nivel <= 5; nivel++) {
+                var r = (raioMax / 5) * nivel;
+                ctx.beginPath();
+                for (var i = 0; i < n; i++) {
+                    var ang = (Math.PI * 2 / n) * i - Math.PI / 2;
+                    var x = cx + r * Math.cos(ang), y = cy + r * Math.sin(ang);
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.stroke();
+            }
+
+            ctx.fillStyle = '#333'; ctx.font = 'bold 11px Arial';
+            for (var j = 0; j < n; j++) {
+                var angLabel = (Math.PI * 2 / n) * j - Math.PI / 2;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + raioMax * Math.cos(angLabel), cy + raioMax * Math.sin(angLabel));
+                ctx.strokeStyle = '#ddd'; ctx.stroke();
+                var lx = cx + (raioMax + 25) * Math.cos(angLabel), ly = cy + (raioMax + 25) * Math.sin(angLabel);
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(labels[j], lx, ly);
+            }
+
+            ctx.beginPath();
+            for (var k = 0; k < n; k++) {
+                var angData = (Math.PI * 2 / n) * k - Math.PI / 2;
+                var val = Math.max(0, Math.min(99, values[k]));
+                var rData = (val / 99) * raioMax;
+                var xData = cx + rData * Math.cos(angData), yData = cy + rData * Math.sin(angData);
+                k === 0 ? ctx.moveTo(xData, yData) : ctx.lineTo(xData, yData);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(235,13,63,0.3)'; ctx.fill();
+            ctx.strokeStyle = '#EB0D3F'; ctx.lineWidth = 2; ctx.stroke();
+
+            for (var m = 0; m < n; m++) {
+                var angPoint = (Math.PI * 2 / n) * m - Math.PI / 2;
+                var valPoint = Math.max(0, Math.min(99, values[m]));
+                var rPoint = (valPoint / 99) * raioMax;
+                var xPoint = cx + rPoint * Math.cos(angPoint), yPoint = cy + rPoint * Math.sin(angPoint);
+                ctx.beginPath(); ctx.arc(xPoint, yPoint, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#EB0D3F'; ctx.fill();
+                ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+            }
+        }
+
+        function desenharBarras(attr) {
+            var container = document.getElementById('barrasContainer');
+            var labels = ['Ritmo', 'Chute', 'Passe', 'Drible', 'Defesa', 'Físico'];
+            var values = [attr.pac, attr.sho, attr.pas, attr.dri, attr.def, attr.phy];
+            var colors = ['#EB0D3F', '#FFD700', '#00C853', '#00B0FF', '#9C27B2', '#FF9800'];
+            container.innerHTML = '';
+
+            for (var i = 0; i < labels.length; i++) {
+                var item = document.createElement('div');
+                var label = document.createElement('div');
+                var track = document.createElement('div');
+                var fill = document.createElement('div');
+                var value = document.createElement('div');
+
+                item.className = 'barra-item';
+                label.className = 'barra-label';
+                track.className = 'barra-track';
+                fill.className = 'barra-fill';
+                value.className = 'barra-valor';
+                label.textContent = labels[i];
+                fill.style.setProperty('--barra-width', values[i] + '%');
+                fill.style.setProperty('--barra-color', colors[i]);
+                value.textContent = values[i];
+
+                track.appendChild(fill);
+                item.appendChild(label);
+                item.appendChild(track);
+                item.appendChild(value);
+                container.appendChild(item);
+            }
+        }
+
+        function showToast(msg) {
+            var toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(function () { toast.classList.add('toast-hide'); setTimeout(function () { if (toast.parentNode) toast.remove(); }, 300); }, 3000);
+        }
+
+        document.addEventListener('click', function (e) {
+            var logout = e.target.closest('#logoutLink');
+            if (logout) {
+                e.preventDefault();
+                usuarioLogado = null;
+                salvarBanco();
+                atualizarNavAuth();
+                showToast('Você saiu da conta.');
+                return;
+            }
+
+            var deleteButton = e.target.closest('[data-delete-id]');
+            if (deleteButton) {
+                cartaDeletar(parseInt(deleteButton.getAttribute('data-delete-id')));
+                atualizarDashboard();
+                showToast('Carta removida!');
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', function () {
+            carregarBanco();
+            atualizarNavAuth();
+            atualizarDashboard();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #000000;
+    background: #000000;
+    color: white;
+}
+
+header {
+    background-color: #EB0D3F;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+header h1 {
+    color: white;
+    margin: 0;
+    margin-left: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-right: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+nav a:last-child {
+    background-color: #EB0D3F;
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+nav a.nav-active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    padding: 6px 12px !important;
+    border-radius: 5px !important;
+}
+
+.nav-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-size: 0.9em;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: #FFD700;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.85em;
+}
+
+.logout-link {
+    color: #FFD700 !important;
+    font-size: 0.85em !important;
+    padding: 4px 8px !important;
+}
+
+nav a.nav-register-link {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+.card-creator-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 100px 20px 40px;
+    color: white;
+}
+
+.card-creator-page h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2em;
+    color: #EB0D3F;
+}
+
+.card-creator-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .card-creator-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard-panel {
+    background: white;
+    color: #333;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-panel h3 {
+    color: #EB0D3F;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+.dashboard-panel h3.creator-attributes-title {
+    color: #EB0D3F;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #EB0D3F;
+    outline: none;
+}
+
+.atributos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.atributo-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.atributo-item label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+.atributo-item input {
+    padding: 8px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.atributo-item input:focus {
+    border-color: #EB0D3F;
+    outline: none;
+}
+
+.attr-value {
+    color: #EB0D3F;
+}
+
+.erro-msg {
+    background-color: #ffe6e6;
+    color: #cc0000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+    border: 1px solid #ffcccc;
+    display: none;
+}
+
+.sucesso-msg {
+    background-color: #e6ffe6;
+    color: #006600;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+    border: 1px solid #ccffcc;
+    display: none;
+}
+
+.fifa-card {
+    background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+    border-radius: 20px;
+    padding: 30px;
+    border: 3px solid #FFD700;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 400px;
+    color: white;
+}
+
+.fifa-card.silver-card {
+    border-color: #C0C0C0;
+}
+
+.fifa-card.gold-card {
+    border-color: #FFD700;
+}
+
+.fifa-card.special-card {
+    border-color: #00ffff;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    background: linear-gradient(145deg, #1a1a3a, #0d0d2d);
+}
+
+.card-overall {
+    font-size: 4em;
+    font-weight: bold;
+    color: #FFD700;
+    line-height: 1;
+}
+
+.card-position {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #FFD700;
+    margin-bottom: 10px;
+}
+
+.card-player-name {
+    font-size: 1.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 15px 0;
+}
+
+.card-type {
+    font-size: 0.9em;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.card-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.card-stat {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 5px;
+    border-radius: 8px;
+}
+
+.stat-val {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.stat-lbl {
+    font-size: 0.65em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.btn-salvar {
+    background-color: #EB0D3F;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto 0;
+    transition: all 0.3s;
+}
+
+.btn-salvar:hover {
+    background-color: #c40b35;
+    transform: translateY(-2px);
+}
+
+footer {
+    background-color: #EB0D3F;
+    color: white;
+    margin-top: 40px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 15px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.footer-container p {
+    margin: 0;
+}
+
+.toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    background: #1a1a2e;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    border-left: 4px solid #EB0D3F;
+    z-index: 3000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    max-width: 350px;
+    animation: toastIn 0.3s ease;
+}
+
+.toast-hide {
+    opacity: 0;
+    transition: opacity 0.3s;
+}

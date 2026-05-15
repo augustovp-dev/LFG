@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Le' Fut Goat</title>
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+<body>
+    <header>
+        <h1>Le' Fut Goat</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="criar-carta.html">Criar Carta</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="historia.html">Minha História no Futebol</a>
+            <span id="navAuth"></span>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+        <div class="cadastro-card">
+            <h2>Crie sua conta ⚽</h2>
+            <p>Comece agora sua jornada no futebol.</p>
+            <div class="erro-msg" id="registerError"></div>
+            <div class="sucesso-msg" id="registerSuccess"></div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Nome Completo</label>
+                    <input type="text" id="registerName" placeholder="Seu nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">E-mail</label>
+                    <input type="email" id="registerEmail" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Senha</label>
+                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirm">Confirmar Senha</label>
+                    <input type="password" id="registerConfirm" placeholder="Repita a senha" required>
+                </div>
+                <button type="submit" class="btn-block">Cadastrar</button>
+            </form>
+            <div class="link-text">
+                Já tem conta? <a href="login.html">Faça login</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>© 2026 Le' Fut Goat</p>
+            <p>⚽ Mais que um esporte, uma paixão</p>
+            <p>Feito com ❤️ para o futebol</p>
+        </div>
+    </footer>
+
+    <script>
+        var usuarios = [];
+        var usuarioLogado = null;
+
+        function carregarBanco() {
+            var u = localStorage.getItem('lefutgoat_usuarios');
+            var l = localStorage.getItem('lefutgoat_sessao');
+            if (u) usuarios = JSON.parse(u);
+            if (l) usuarioLogado = JSON.parse(l);
+        }
+
+        function salvarBanco() {
+            localStorage.setItem('lefutgoat_usuarios', JSON.stringify(usuarios));
+            if (usuarioLogado) {
+                localStorage.setItem('lefutgoat_sessao', JSON.stringify(usuarioLogado));
+            } else {
+                localStorage.removeItem('lefutgoat_sessao');
+            }
+        }
+
+        function atualizarNavAuth() {
+            var area = document.getElementById('navAuth');
+            if (usuarioLogado) {
+                var iniciais = usuarioLogado.nome.split(' ').map(function (n) { return n[0]; }).join('').substring(0, 2).toUpperCase();
+                area.innerHTML = '<span class="nav-info"><span class="user-avatar">' + iniciais + '</span> ' + usuarioLogado.nome.split(' ')[0] + ' <a class="logout-link" href="#" id="logoutLink">Sair</a></span>';
+            } else {
+                area.innerHTML = '<a href="login.html">Login</a><a href="cadastro.html" class="nav-register-link nav-active">Cadastrar</a>';
+            }
+        }
+
+        function usuarioCadastrar(nome, email, senha) {
+            for (var i = 0; i < usuarios.length; i++) {
+                if (usuarios[i].email === email) {
+                    throw new Error('Email já cadastrado!');
+                }
+            }
+
+            var id = usuarios.length > 0 ? Math.max.apply(null, usuarios.map(function (u) { return u.id; })) + 1 : 1;
+            usuarios.push({
+                id: id,
+                nome: nome,
+                email: email,
+                senha: senha,
+                dataCadastro: new Date().toLocaleDateString('pt-BR')
+            });
+            salvarBanco();
+        }
+
+        function showMsg(el, msg) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            var nome = document.getElementById('registerName').value.trim();
+            var email = document.getElementById('registerEmail').value.trim();
+            var senha = document.getElementById('registerPassword').value;
+            var confirm = document.getElementById('registerConfirm').value;
+            var errEl = document.getElementById('registerError');
+            var sucEl = document.getElementById('registerSuccess');
+            errEl.style.display = 'none';
+            sucEl.style.display = 'none';
+
+            if (nome.length < 3) return showMsg(errEl, 'Nome deve ter pelo menos 3 caracteres!');
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showMsg(errEl, 'E-mail inválido!');
+            if (senha.length < 6) return showMsg(errEl, 'Senha deve ter pelo menos 6 caracteres!');
+            if (senha !== confirm) return showMsg(errEl, 'As senhas não coincidem!');
+
+            try {
+                usuarioCadastrar(nome, email, senha);
+                showMsg(sucEl, 'Conta criada com sucesso! Faça login.');
+                document.getElementById('registerForm').reset();
+                setTimeout(function () { window.location.href = 'login.html'; }, 1500);
+            } catch (err) {
+                showMsg(errEl, err.message);
+            }
+        }
+
+        function showToast(msg) {
+            var toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(function () { toast.classList.add('toast-hide'); setTimeout(function () { if (toast.parentNode) toast.remove(); }, 300); }, 3000);
+        }
+
+        document.addEventListener('click', function (e) {
+            var logout = e.target.closest('#logoutLink');
+            if (logout) {
+                e.preventDefault();
+                usuarioLogado = null;
+                salvarBanco();
+                atualizarNavAuth();
+                showToast('Você saiu da conta.');
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', function () {
+            carregarBanco();
+            atualizarNavAuth();
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+        });
+    </script>
+</body>
+</html>
