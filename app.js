@@ -39,3 +39,4 @@ app.listen(PORTA_APP, function () {
     console.log(`    🌐  Acesse: http://${HOST_APP}:${PORTA_APP}`);
     console.log(`    📍  Ambiente: .:${process.env.AMBIENTE_PROCESSO || ambiente_processo}:.\n`);
 });
+...

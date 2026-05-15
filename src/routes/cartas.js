@@ -20,3 +20,4 @@ router.get("/indicadores", function (req, res) {
 });
 
 module.exports = router;
+...
