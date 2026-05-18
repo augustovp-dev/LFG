@@ -36,4 +36,3 @@ CREATE TABLE historico_overall (
     momento       DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (fk_usuario) REFERENCES usuarios(id_usuario)
 );
-...

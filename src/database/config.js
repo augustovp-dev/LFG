@@ -34,4 +34,3 @@ function executar(instrucao) {
 module.exports = {
     executar
 };
-...

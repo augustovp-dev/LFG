@@ -63,4 +63,3 @@ module.exports = {
     autenticar,
     cadastrar
 };
-...
