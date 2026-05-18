@@ -81,14 +81,14 @@ nav a.nav-active {
 }
 
 nav a.nav-register-link {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2);   
     padding: 6px 12px;
     border-radius: 5px;
 }
 
 .card-creator-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background-color: black;
     padding: 100px 20px 40px;
     color: white;
 }
@@ -116,7 +116,7 @@ nav a.nav-register-link {
 
 .dashboard-panel {
     background: white;
-    color: #333;
+    color: #333333;
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -227,7 +227,7 @@ nav a.nav-register-link {
 }
 
 .fifa-card {
-    background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+    background-color: #EB0D3F;
     border-radius: 20px;
     padding: 30px;
     border: 3px solid #FFD700;
@@ -368,4 +368,3 @@ footer {
     opacity: 0;
     transition: opacity 0.3s;
 }
-...
