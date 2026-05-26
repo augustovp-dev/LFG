@@ -39,7 +39,7 @@ CREATE TABLE cartagk(
     velocidade INT,
     overall INT,
     data_criacao  DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(fk_usuario)REFERENCES users(id_usuario) 
+    FOREIGN KEY(fk_usuario)REFERENCES usuarios(id_usuario) 
 );
 
 CREATE TABLE historico_overall (
